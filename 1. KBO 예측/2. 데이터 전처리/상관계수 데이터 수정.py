@@ -64,4 +64,29 @@ merge_df2["지표구분"] = merge_df2["변수"].apply(
     lambda x: "긍정" if x in positive_metrics else "부정" if x in negative_metrics else "기타"
 )
 
-merge_df2.to_excel('/Users/SOO/Desktop/데분 포트폴리오/1. KBO 예측/2. 데이터 전처리/팀순위_상관계수_3(지표구분추가).xlsx', index=False)
+# 엑셀 저장
+# merge_df2.to_excel('/Users/SOO/Desktop/데분 포트폴리오/1. KBO 예측/2. 데이터 전처리/팀순위_상관계수_3(지표구분추가).xlsx', index=False)
+
+
+# 분류 작업
+
+# 상관계수 절대값 처리
+merge_df2['상관계수_절대값'] = merge_df2['상관계수'].abs()
+
+
+# 상위 5위 선별 함수 정의
+def get_top5(x):
+    # 상관계수_절대값을 기준으로 정렬하여 상위 5개 행을 반환
+    return x.sort_values('상관계수_절대값', ascending=False).head()
+
+# 하위 5위 선별 함수 정의
+def get_bottom5(x):
+    # 상관계수_절대값을 기준으로 정렬하여 상위 5개 행을 반환
+    return x.sort_values('상관계수_절대값', ascending=False).tail()
+
+type_top5 = merge_df2.groupby('분류').apply(get_top5)
+
+
+# 엑셀 저장
+# type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/1. KBO 예측/2. 데이터 전처리/분류별_상위5지표(상관계수절대값기준).xlsx', index=False)
+
