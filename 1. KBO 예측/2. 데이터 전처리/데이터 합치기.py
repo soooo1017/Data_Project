@@ -1,7 +1,9 @@
 import pandas as pd
 
+# 모든 컬럼 확인가능하도록 함
 pd.set_option('display.max_columns', None)
 
+# 데이터 불러오기
 team_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/팀기록.xlsx')
 hitter_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/타자기록.xlsx')
 pitcher_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/투수기록.xlsx')
@@ -53,15 +55,37 @@ KBO_all_df = pd.merge(KBO_hpd_df, runner_df, on='연도_팀명', how='left', suf
 # 최종 데이터의 불필요한 컬럼 삭제
 KBO_all_df = KBO_all_df.drop(columns='연도_팀명')
 
-# print(KBO_all_df.head())
+# 팀명 라벨링 작업
+'''
+0. KT
+1. 두산
+2. 삼성
+3. 키움 - 넥센 - 우리 - 현대
+4. 한화
+5. SSG - SK
+6. KIA
+7. LG
+8. 롯데
+9. NC '''
+
+team_label = {'KT':0, '두산':1, '삼성':2,
+              '키움':3, '넥센':3, '우리':3, '현대':3,
+              '한화':4,
+              'SSG':5, 'SK':5,
+              'KIA':6, 'LG':7, '롯데':8, 'NC':9}
 
 
+# 매핑 함수 정의
+def label_team(team):
+    return team_label.get(team, -1)  # 매칭되지 않는 경우 -1 반환
+
+# 새로운 열 생성
+KBO_all_df['팀명_라벨링'] = KBO_all_df['팀명'].apply(label_team)
 
 
 # 데이터와 용어 2개 시트로 엑셀 저장
 # create a excel writer object
-with pd.ExcelWriter("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v1.xlsx") as writer:
+with pd.ExcelWriter("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v2(팀명 라벨링 완료).xlsx") as writer:
     # use to_excel function and specify the sheet_name and without index
     KBO_all_df.to_excel(writer, sheet_name="데이터취합", index=False)
     word_df.to_excel(writer, sheet_name="용어정리", index=False)
-
