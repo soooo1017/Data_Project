@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.font_manager as fm
 
 # 데이터 불러오기
-KBO_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v2(팀명 라벨링 완료).xlsx', sheet_name='데이터취합')
+KBO_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v3(지표 구분 추가).xlsx', sheet_name='데이터취합')
 KBO_word_df = pd.read_excel("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v2(팀명 라벨링 완료).xlsx", sheet_name='용어정리')
 
 # '승률'와의 상관계수 계산 및 정렬(낮은 값부터!!)
@@ -88,17 +88,17 @@ merge_df2['구분'] = merge_df2['분류']
 # 상위 5위 선별 함수 정의
 def get_top5(x):
     # 상관계수_절대값을 기준으로 정렬하여 상위 5개 행을 반환
-    return x.sort_values('상관계수_절대값', ascending=False).head()
+    return x.sort_values('상관계수_절대값', ascending=False).head(10)
 
 type_top5 = merge_df2.groupby('분류').apply(get_top5, include_groups=False)
 
 values_to_drop = ['팀명_라벨링', '연도']
 type_top5 = type_top5[~type_top5['변수'].isin(values_to_drop)]
 
-print(type_top5)
+# print(type_top5)
 
 # 엑셀 저장
-type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/분류별_상위5지표(상관계수절대값기준).xlsx', index=True)
+type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/분류별_상위10지표(상관계수절대값기준)_v1.xlsx', index=True)
 
 
 
