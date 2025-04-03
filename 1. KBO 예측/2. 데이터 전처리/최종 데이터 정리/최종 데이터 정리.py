@@ -22,7 +22,7 @@ pitcher_variable = ['WHIP_pitcher', 'ERA_pitcher', 'R_pitcher', 'AVG_pitcher', '
 selected_columns = team_variable + pitcher_variable + hitter_variable + defense_variable + runner_variable
 Final_df = KBO_df[selected_columns]
 
-
+'''
 # 3. '예측_순위' 변수 생성
 
 # 3-1. 데이터 정렬 (기준 : '팀명_라벨링' > '연도')
@@ -31,12 +31,13 @@ Final_df = Final_df.sort_values(by=['팀명_라벨링', '연도'])
 # 3-2. 같은 팀에 대해 '순위' 값을 이전 연도의 '예측_순위'값으로!! : GROUP BY ('팀명_라벨링'별로!) / SHIFT(데이터를 행이나 열 이동!) 활용
 # Final_df['예측_순위'] = Final_df.groupby('팀명_라벨링')['순위'].shift(-1, fill_value = 0).astype(int) # 단순히 '예측_순위' 컬럼 추가하면 맨 뒤에 위치함!!
 Final_df.insert(2, '예측_순위', Final_df.groupby('팀명_라벨링')['순위'].shift(-1, fill_value = 0).astype(int)) # '예측_순위'가 '순위' 뒤로 오도록!!
+Final_df.insert(5, '예측_승률', Final_df.groupby('팀명_라벨링')['승률'].shift(-1, fill_value = 0)) # '예측_승률'가 '승률' 뒤로 오도록!!
 
 # 3-2. 데이터 재정렬 (기준 : '연도' > '순위')
 Final_df = Final_df.sort_values(by=['연도', '순위'])
-
+'''
 # 엑셀 저장
-Final_df.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/최종 데이터 정리/Final_KBO_Data.xlsx', index=False)
+Final_df.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/최종 데이터 정리/Final_KBO_Data_v1.xlsx', index=False)
 
 
 # print(Final_df.head())
