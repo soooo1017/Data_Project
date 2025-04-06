@@ -11,10 +11,8 @@ def calculate_3yr_avg(df, year, columns):
     return past_data.groupby('팀명_라벨링')[columns].mean().reset_index()
 
 # 3. 사용할 변수 설정
-features = ['WHIP_pitcher', 'ERA_pitcher', 'R_pitcher', 'AVG_pitcher', 'BPC_pitcher',
-            'OPS_hitter', 'RISP_hitter', 'R_hitter', 'RBI_hitter', 'AVG_hitter',
-            'FPCT_defense', 'SB_defense', 'PB_defense', 'E_defense', 'CS%_defense',
-            'SB_runner', 'SBA_runner', 'OOB_runner', 'CS_runner']
+features = ['WHIP_pitcher', 'R_pitcher', 'BPC_pitcher', 'OPS_hitter', 'R_hitter',
+            'AVG_hitter', 'FPCT_defense', 'SB_defense', 'SB_runner', 'SBA_runner' ]
 target = '순위'  # 순위 예측
 
 # 4. 학습 데이터 준비 (2005~2023년)

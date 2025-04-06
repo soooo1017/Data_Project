@@ -28,7 +28,7 @@ param_grid = {
 }
 
 # 7. GridSearchCV 실행 (교차검증 5번 진행)
-grid_search = GridSearchCV(xgb_model, param_grid, cv=5, scoring='r2', n_jobs=-1)
+grid_search = GridSearchCV(xgb_model, param_grid, cv=10, scoring='r2', n_jobs=-1)
 grid_search.fit(X_train, y_train)
 
 # 8. 최적의 하이퍼파라미터 출력
@@ -58,4 +58,4 @@ print(f"📊 결정계수(R²): {r2:.4f}")
 
 # 13. 2025년 예측 승률 출력
 print("\n📌 2025년 예측 승률")
-print(Final_df[Final_df['연도'] == 2024][['팀명', '연도', '예측_승률']])
+print(Final_df[Final_df['연도'] == 2024][['팀명', '연도', '예측_승률', '승률']])
