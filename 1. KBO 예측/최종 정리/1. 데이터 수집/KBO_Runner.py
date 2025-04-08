@@ -34,8 +34,8 @@ for th in th_tag:
 ws.append(title)
 
 
-# 연도별 선택 후 데이터 스크래핑 range(2001, 2026)
-for y in range(2001, 2025) :
+# 연도별 선택 후 데이터 스크래핑 range(2002, 2026)
+for y in range(2002, 2025) :
 
     # 연도 옵션 선택자에서 해당 연도 선택
     select_y = Select(driver.find_element(By.ID, 'cphContents_cphContents_cphContents_ddlSeason_ddlSeason'))

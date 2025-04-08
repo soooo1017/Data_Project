@@ -35,35 +35,37 @@ KBO_corr_df.loc[~KBO_corr_df['분류'].isin(['주루', '타자', '투수', '수�
 KBO_corr_df['상관계수_절대값'] = KBO_corr_df['상관계수'].abs()
 KBO_corr_df['구분'] = KBO_corr_df['분류']
 
-# 상위 5위 선별 함수 정의
-def get_top5(x):
+# 상위 10위 선별 함수 정의
+def get_top10(x):
     # 상관계수_절대값을 기준으로 정렬하여 상위 5개 행을 반환
     return x.sort_values('상관계수_절대값', ascending=False).head(10)
 
-type_top5 = KBO_corr_df.groupby('분류').apply(get_top5, include_groups=False)
+type_top10 = KBO_corr_df.groupby('분류').apply(get_top10, include_groups=False)
 
 values_to_drop = ['팀명_라벨링', '연도']
-type_top5 = type_top5[~type_top5['변수'].isin(values_to_drop)]
+type_top10 = type_top10[~type_top10['변수'].isin(values_to_drop)]
 
 # print(type_top5)
 
 # 엑셀 저장
-type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/분류별_상위10지표(상관계수절대값기준)_v3(2001년 제외).xlsx', index=True)
+# type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/분류별_상위10지표(상관계수절대값기준)_v3(2001년 제외).xlsx', index=True)
 
 
 
 
-'''
+
 # 한글 폰트 설정 (AppleGothic 사용)
 plt.rc("font", family="AppleGothic")  # 한글 폰트 설정
 
 # 히트맵 생성
 plt.figure(figsize=(10, 8))  # 그래프 크기 조정
-sns.heatmap(KBO_df.corr(numeric_only=True), annot=True, fmt=".2f", cmap="coolwarm")
+hm = sns.heatmap(KBO_df.corr(numeric_only=True), annot=True, fmt=".2f", cmap="coolwarm")
 
 # 그래프 제목 추가
 plt.title("KBO 팀 데이터 상관계수 히트맵", fontsize=16)
 
 # 그래프 출력
-plt.show()
-'''
+# plt.show()
+
+
+hm.get_figure().savefig("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/상관계수_히트맵.png")

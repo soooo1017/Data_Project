@@ -55,7 +55,7 @@ r2 = r2_score(y_test, predictions)
 
 print(f"📊 순위 예측 MAE (평균 오차): {rank_mae:.2f} 계단")
 print(f"📊 순위 예측 MSE: {rank_mse:.2f}")
-print(f"📊 결정계수(R²): {r2:.4f}")
+print(f"📊 R²: {r2:.4f}")
 
 # 11. 예측값 출력
 final_data.loc[final_data['연도'] == 2024, '예측_승률'] = predictions
