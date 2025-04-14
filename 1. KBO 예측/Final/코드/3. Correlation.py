@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.font_manager as fm
 
 # 데이터 불러오기
-KBO_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v4(연도 2001 삭제).xlsx', sheet_name='데이터취합')
+KBO_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/최종 정리/취합_전처리 데이터.xlsx')
 
 # '승률'와의 상관계수 계산 및 정렬(낮은 값부터!!)
 KBO_corr = KBO_df.corr(numeric_only=True)['승률'].sort_values(ascending = True)
@@ -23,11 +23,9 @@ KBO_corr_df.loc[KBO_corr_df['변수'].str.endswith('_pitcher'), '분류'] = '투
 
 KBO_corr_df.loc[~KBO_corr_df['분류'].isin(['주루', '타자', '투수', '수비']), '분류'] = '전체'
 
-# print(KBO_corr_df)
-
 
 # 엑셀 저장
-# KBO_corr_df.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/승률상관계수_v3(2001년 제외).xlsx', index=False)
+KBO_corr_df.to_excel('승률상관계수.xlsx', index=False)
 
 
 # (타자, 투수, 수비, 주루) 분류 작업
@@ -45,12 +43,9 @@ type_top10 = KBO_corr_df.groupby('분류').apply(get_top10, include_groups=False
 values_to_drop = ['팀명_라벨링', '연도']
 type_top10 = type_top10[~type_top10['변수'].isin(values_to_drop)]
 
-# print(type_top5)
 
 # 엑셀 저장
-# type_top5.to_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/분류별_상위10지표(상관계수절대값기준)_v3(2001년 제외).xlsx', index=True)
-
-
+type_top10.to_excel('분류별_상위10지표(상관계수절대값기준).xlsx', index=True)
 
 
 
@@ -65,7 +60,8 @@ hm = sns.heatmap(KBO_df.corr(numeric_only=True), annot=True, fmt=".2f", cmap="co
 plt.title("KBO 팀 데이터 상관계수 히트맵", fontsize=16)
 
 # 그래프 출력
-# plt.show()
+plt.show()
 
+# 히트맵 저장
+hm.get_figure().savefig("상관계수_히트맵.png")
 
-hm.get_figure().savefig("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/상관계수/상관계수_히트맵.png")

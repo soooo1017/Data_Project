@@ -1,25 +1,20 @@
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
-# 모든 컬럼 확인가능하도록 함
+# 모든 컬럼 확인가능하도록 설정
 pd.set_option('display.max_columns', None)
 
-# 데이터 불러오기
-team_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/팀기록.xlsx')
-hitter_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/타자기록.xlsx')
-pitcher_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/투수기록.xlsx')
-defense_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/수비기록.xlsx')
-runner_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/주루기록.xlsx')
-word_df = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/DATA/용어정리.xlsx')
+# 모든 시트 데이터 불러오기
+data = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/최종 정리/KBO 팀기록.xlsx', sheet_name=None)
 
-# 용어 데이터 처리 (분류 : '타자, 투수, 수비, 주루'로 표현 / 용어와 해설 별도로 분류)
-word_df.columns = ['분류', '용어해설']
-word_df['분류'] = word_df['분류'].str.replace(' 기록', '', regex=False)
+# 데이터프레임 지정
+team_df = data['팀 기록']
+hitter_df = data['타자']
+pitcher_df = data['투수']
+defense_df = data['수비']
+runner_df = data['주루']
+word_df = data['용어정리']
 
-split_result = word_df['용어해설'].str.split(r'\s*:\s*', n=1, expand=True)
-word_df['용어'] = split_result[0]
-word_df['해설'] = split_result[1]
-
-word_df = word_df.drop(columns='용어해설')
 
 # 전체 데이터프레임 > 불필요 컬럼 삭제
 team_df = team_df.drop(columns=['경기', '패', '무', '게임차', '최근10경기', '연속', '홈', '방문'])
@@ -27,7 +22,6 @@ team_df = team_df.drop(columns=['경기', '패', '무', '게임차', '최근10�
 # 불필요 컬럼 삭제 1. 타자, 투수, 수비, 주루 데이터프레임에서 '순위' 컬럼 삭제
 for df in [hitter_df, pitcher_df, defense_df, runner_df]:
     df.drop(columns='순위', inplace=True)
-
 
 
 # 데이터프레임 merge시 기준 열 생성(고유값 : 연도_팀명)
@@ -97,9 +91,28 @@ KBO_all_df['팀명_라벨링'] = KBO_all_df['팀명'].apply(label_team)
 KBO_all_df = KBO_all_df[KBO_all_df.연도 != 2001]
 
 
-# 데이터와 용어 2개 시트로 엑셀 저장
-# create a excel writer object
-with pd.ExcelWriter("/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/(2차) 데이터 전처리 및 상관계수 결과/전처리_v5.xlsx") as writer:
-    # use to_excel function and specify the sheet_name and without index
-    KBO_all_df.to_excel(writer, sheet_name="데이터취합", index=False)
-    word_df.to_excel(writer, sheet_name="용어정리", index=False)
+# BPC_pitcher 변수 생성 (세이브 + 홀드)
+# 가중치 : 세이브와 홀드의 상관계수로 계산함 ( 계산 = 세이브(or 홀드) 가중치 / (세이브 가중치 + 홀드 가중치) )
+# 세이브 가중치 : 0.697076763 / 홀드 가중치 : 0.302923237
+KBO_all_df['BPC_pitcher'] = KBO_all_df['SV_pitcher']*0.697076763 + KBO_all_df['HLD_pitcher']*0.302923237
+
+# 데이터 저장
+KBO_all_df.to_excel('취합_전처리 데이터.xlsx', index=False)
+
+# 선정된 지표만 남기기
+# 선정된 지표 리스트
+team_variable = ['연도', '순위', '팀명', '승', '승률', '팀명_라벨링']
+defense_variable = ['FPCT_defense', 'SB_defense', 'PB_defense', 'E_defense', 'CS%_defense']
+runner_variable = ['SB_runner', 'SBA_runner', 'OOB_runner', 'CS_runner']
+hitter_variable = ['OPS_hitter', 'RISP_hitter', 'R_hitter', 'RBI_hitter', 'AVG_hitter']
+pitcher_variable = ['WHIP_pitcher', 'ERA_pitcher', 'R_pitcher', 'AVG_pitcher', 'BPC_pitcher']
+
+# 선정된 지표 새로운 df 생성
+selected_columns = team_variable + pitcher_variable + hitter_variable + defense_variable + runner_variable
+scaling_columns = pitcher_variable + hitter_variable + defense_variable + runner_variable
+Final_df = KBO_all_df[selected_columns]
+
+
+
+# 데이터 저장
+Final_df.to_excel('최종 데이터.xlsx', index=False)

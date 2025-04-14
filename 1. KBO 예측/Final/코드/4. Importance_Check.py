@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # 1. 데이터 불러오기
-final_data = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/최종 데이터 정리/Final_KBO_Data_v3.xlsx')
+final_data = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/최종 정리/최종 데이터.xlsx')
 
 # 2. Feature & Target 설정
 X = ['WHIP_pitcher', 'ERA_pitcher', 'R_pitcher', 'AVG_pitcher', 'BPC_pitcher',
@@ -24,3 +24,11 @@ model.fit(X_train, y_train)
 plt.figure(figsize=(10, 6))
 xgb.plot_importance(model, importance_type="gain")  # 정보획득량 기준
 plt.show()
+
+'''
+중요도 체크 결과
+R_hitter > WHIP_pitcher > OPS_hitter > ERA_pitcher > R_pitcher
+> BPC_pitcher > AVG_hitter > RBI_hitter > CS_runner > E_defense
+> AVG_pitcher > RISP_hitter > CS%_defense > SB_runner > OOB_runner
+> PB_defense > FPCT_defense > SB_defense > SBA_runner
+'''

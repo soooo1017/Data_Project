@@ -1,11 +1,10 @@
 import pandas as pd
 import xgboost as xgb
-from xgboost import XGBRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # 데이터 로드
-final_data = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/2. 데이터 전처리/최종 데이터 정리/Final_KBO_Data_v3.xlsx')
+final_data = pd.read_excel('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/1. KBO 예측/최종 정리/최종 데이터.xlsx')
 
 # X와 Y로 분리
 # 사용할 변수
