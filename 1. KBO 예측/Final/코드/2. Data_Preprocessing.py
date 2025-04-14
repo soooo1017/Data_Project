@@ -112,6 +112,9 @@ selected_columns = team_variable + pitcher_variable + hitter_variable + defense_
 scaling_columns = pitcher_variable + hitter_variable + defense_variable + runner_variable
 Final_df = KBO_all_df[selected_columns]
 
+# 정규화
+scaler = MinMaxScaler()
+Final_df[scaling_columns] = scaler.fit_transform(Final_df[scaling_columns])
 
 
 # 데이터 저장
