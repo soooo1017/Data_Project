@@ -88,18 +88,18 @@ for video in video_ids:
         details = item.get('contentDetails', {})
 
         all_video_data.append({
-            'video_id': vid,
-            'title': video['title'],
-            'published_at': video['published_at'],
-            'view_count': stats.get('viewCount', 0),
-            'like_count': stats.get('likeCount', 0),
-            'comment_count': stats.get('commentCount', 0),
-            'duration': details.get('duration'),
-            'description': snippet.get('description'),
-            'tags': ', '.join(snippet.get('tags', [])),  # 리스트 -> 문자열
-            'category_id': snippet.get('categoryId'),
-            'dimension': details.get('dimension'),
-            'definition': details.get('definition')
+            'video_id': vid, # 영상 아이디
+            'title': video['title'], # 영상 제목
+            'published_at': video['published_at'], # 영상 게시일
+            'view_count': stats.get('viewCount', 0), # 조회수
+            'like_count': stats.get('likeCount', 0), # 좋아요 수
+            'comment_count': stats.get('commentCount', 0), # 댓글 수
+            'duration': details.get('duration'), # 영상 길이
+            'description': snippet.get('description'), # 영상 설명
+            'tags': ', '.join(snippet.get('tags', [])),  # 리스트 -> 문자열 # 영상 태그
+            'category_id': snippet.get('categoryId'), # 영상 카테고리
+            'dimension': details.get('dimension'), # 영상 2D/3D
+            'definition': details.get('definition') # 영상
         })
 
         time.sleep(0.1)  # 너무 빠른 호출 방지 (API 한도 보호용)

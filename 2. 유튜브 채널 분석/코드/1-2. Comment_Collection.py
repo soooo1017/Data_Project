@@ -9,7 +9,7 @@ api_key = 'AIzaSyBqklA_4k7nyCUzvBB72Jg0V14DOMUcW2U' # 개인 구글 API key
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 # 영상 데이터 CSV 파일 불러오기
-video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-24_021509)ssglanders_video_data.csv')
+video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-25_135732)ssglanders_video_data.csv')
 
 # 조회수 컬럼을 숫자로 변환
 video_df['view_count'] = pd.to_numeric(video_df['view_count'], errors='coerce')
