@@ -9,7 +9,7 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 channel_id = 'UCt8iRtgjVqm5rJHNl1TUojg'
 
 # 기존 영상 메타데이터 불러오기
-video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-25_135732)ssglanders_video_data.csv')
+video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-26_232608)ssglanders_video_data.csv')
 existing_video_ids = set(video_df['video_id'])
 
 # 1. 재생목록 메타데이터 수집

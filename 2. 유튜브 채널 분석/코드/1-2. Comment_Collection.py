@@ -9,7 +9,7 @@ api_key = 'AIzaSyBqklA_4k7nyCUzvBB72Jg0V14DOMUcW2U' # 개인 구글 API key
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 # 영상 데이터 CSV 파일 불러오기
-video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-25_135732)ssglanders_video_data.csv')
+video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-26_232608)ssglanders_video_data.csv')
 
 # 조회수 컬럼을 숫자로 변환
 video_df['view_count'] = pd.to_numeric(video_df['view_count'], errors='coerce')
@@ -24,8 +24,13 @@ bottom_5 = video_df.sort_values(by='view_count', ascending=True).head(5)
 # video_id 리스트로 추출
 target_videos = pd.concat([top_5, bottom_5])
 video_ids = target_videos['video_id'].tolist()
+top_5_ids = top_5['video_id'].tolist()
+bottom_5_ids = bottom_5['video_id'].tolist()
 
 print("댓글 수집할 영상 ID 목록:", video_ids)
+print("Top5 영상 ID 목록:", top_5_ids)
+print("Bottom5 영상 ID 목록:", bottom_5_ids)
+
 
 # 전체 댓글 데이터 저장 리스트
 all_comments = []
