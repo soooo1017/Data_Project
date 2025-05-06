@@ -9,7 +9,7 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 channel_id = 'UCt8iRtgjVqm5rJHNl1TUojg'
 
 # 기존 영상 메타데이터 불러오기
-video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-26_232608)ssglanders_video_data.csv')
+video_df = pd.read_csv('../1. Data_Collection/(2025-04-28_141831)ssglanders_video_data.csv')
 existing_video_ids = set(video_df['video_id'])
 
 # 1. 재생목록 메타데이터 수집
@@ -81,12 +81,12 @@ now = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 # playlist_metadata 저장
 playlist_meta_df = pd.DataFrame(playlist_meta)
 playlist_meta_df['video_ids'] = playlist_meta_df['video_ids'].apply(lambda x: ', '.join(x))
-playlist_meta_df.to_csv(f'/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/({now})ssglanders_playlist_metadata.csv',
+playlist_meta_df.to_csv(f'../1. Data_Collection/({now})ssglanders_playlist_metadata.csv',
                         index=False, encoding='utf-8-sig')
 
 # video-playlist 매핑 저장
 video_playlist_df = pd.DataFrame(video_playlist_map)
-video_playlist_df.to_csv(f'/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/({now})ssglanders_video_playlist_map.csv',
+video_playlist_df.to_csv(f'../1. Data_Collection/({now})ssglanders_video_playlist_map.csv',
                          index=False, encoding='utf-8-sig')
 
 print("재생목록 메타데이터와 영상-재생목록 매핑 정보를 저장했어요!")

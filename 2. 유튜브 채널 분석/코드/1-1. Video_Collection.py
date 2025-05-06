@@ -112,7 +112,7 @@ for video in video_ids:
 now = datetime.now().strftime('%Y-%m-%d_%H%M%S')  # 날짜+시간을 파일명으로 쓸 수 있게 형식화
 df = pd.DataFrame(all_video_data)
 
-df.to_csv(f'/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/({now})ssglanders_video_data.csv',
+df.to_csv(f'../1. Data_Collection/({now})ssglanders_video_data.csv',
           index=False, encoding='utf-8-sig')
 
 print(f"{len(df)}개의 영상 데이터를 파일에 저장했어요!")

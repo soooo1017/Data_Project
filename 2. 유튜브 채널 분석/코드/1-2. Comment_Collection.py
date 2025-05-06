@@ -9,7 +9,7 @@ api_key = 'AIzaSyBqklA_4k7nyCUzvBB72Jg0V14DOMUcW2U' # 개인 구글 API key
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 # 영상 데이터 CSV 파일 불러오기
-video_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/(2025-04-26_232608)ssglanders_video_data.csv')
+video_df = pd.read_csv('../2. Data_Preprocessing/ssglanders_video_final.csv')
 
 # 조회수 컬럼을 숫자로 변환
 video_df['view_count'] = pd.to_numeric(video_df['view_count'], errors='coerce')
@@ -74,7 +74,7 @@ for video_id in video_ids:
 now = datetime.now().strftime('%Y-%m-%d_%H%M%S')  # 날짜+시간을 파일명으로 쓸 수 있게 형식화
 
 df_comments = pd.DataFrame(all_comments)
-df_comments.to_csv(f'/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/({now})ssglanders_video_comments.csv',
+df_comments.to_csv(f'../1. Data_Collection/({now})ssglanders_video_comments.csv',
                    index=False, encoding='utf-8-sig')
 
 print(f"✅ 총 {len(df_comments)}개의 댓글을 저장했어요!")
