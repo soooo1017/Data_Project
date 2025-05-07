@@ -1,10 +1,11 @@
 import pandas as pd
 import re
+from datetime import datetime
 
 
-video_df = pd.read_csv('../1. Data_Collection/(2025-04-28_141831)ssglanders_video_data.csv')
-playlist_df = pd.read_csv('../1. Data_Collection/(2025-04-28_142352)ssglanders_playlist_metadata.csv')
-video_playlist_df = pd.read_csv('../1. Data_Collection/(2025-04-28_142352)ssglanders_video_playlist_map.csv')
+video_df = pd.read_csv('../1. Data_Collection/(2025-05-07_013328)ssglanders_video_data.csv')
+playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-07_020216)ssglanders_playlist_metadata.csv')
+video_playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-07_020216)ssglanders_video_playlist_map.csv')
 
 # 모든 컬럼 확인가능하도록 설정
 pd.set_option('display.max_columns', None)
@@ -57,6 +58,66 @@ video_playlist_final_df['playlist_label'] = pd.merge(video_playlist_df, playlist
 # video_final_df 생성
 video_final_df = pd.merge(video_df, video_playlist_df, on='video_id', how='left')
 video_final_df = video_final_df[video_final_df['publish_year'] >= 2020]
+
+'''
+# publish_time : object에서 datetime 형식 변경
+video_final_df['publish_time'] = video_final_df['publish_time'].apply(
+    lambda x: datetime.strptime(x, '%H:%M:%S').time()
+)
+'''
+
+# 업로드 시간 라벨링 함수 만들기
+def label_publish_time(time_obj):
+    if datetime.strptime('00:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('06:00:00', '%H:%M:%S').time():
+        return '심야'
+    elif datetime.strptime('06:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('09:00:00', '%H:%M:%S').time():
+        return '아침 이른시간'
+    elif datetime.strptime('09:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('12:00:00', '%H:%M:%S').time():
+        return '아침'
+    elif datetime.strptime('12:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('15:00:00', '%H:%M:%S').time():
+        return '점심'
+    elif datetime.strptime('15:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('18:00:00', '%H:%M:%S').time():
+        return '오후'
+    elif datetime.strptime('18:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('21:00:00', '%H:%M:%S').time():
+        return '저녁'
+    else:
+        return '밤'
+
+# DataFrame에 적용
+video_final_df['publish_time_label'] = video_final_df['publish_time'].apply(label_publish_time)
+
+
+# 업로드 시간 라벨링 함수 만들기
+def am_pm_publish_time(time_obj):
+    if datetime.strptime('00:00:00', '%H:%M:%S').time() <= time_obj < datetime.strptime('12:00:00', '%H:%M:%S').time():
+        return '오전'
+    else:
+        return '오후'
+
+# DataFrame에 적용
+video_final_df['publish_am_pm'] = video_final_df['publish_time'].apply(am_pm_publish_time)
+
+
+def duration(duration_seconds) :
+    if duration_seconds <= 60 :
+        return '1분 이하'
+    elif (duration_seconds > 60) and (duration_seconds <= 180) :
+        return '1분 초과 3분 이하'
+    elif (duration_seconds > 180) and (duration_seconds <= 300) :
+        return '3분 초과 5분 이하'
+    elif (duration_seconds > 300) and (duration_seconds <= 600) :
+        return '5분 초과 10분 이하'
+    elif (duration_seconds > 600) and (duration_seconds <= 900) :
+        return '10분 초과 15분 이하'
+    elif (duration_seconds > 900) and (duration_seconds <= 1800) :
+        return '15분 초과 30분 이하'
+    elif (duration_seconds > 1800) and (duration_seconds <= 3600) :
+        return '30분 초과 1시간 이하'
+    elif duration_seconds > 3600 :
+        return '1시간 초과'
+
+video_final_df['duration_label'] = video_final_df['duration_seconds'].apply(duration)
+
 
 
 # 데이터 저장
