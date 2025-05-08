@@ -9,8 +9,11 @@ youtube = build('youtube', 'v3', developerKey=api_key)
 channel_id = 'UCt8iRtgjVqm5rJHNl1TUojg'
 
 # 기존 영상 메타데이터 불러오기
-video_df = pd.read_csv('../1. Data_Collection/(2025-05-07_013328)ssglanders_video_data.csv')
-existing_video_ids = set(video_df['video_id'])
+video_df = pd.read_csv('../1. Data_Collection/(2025-05-09_025608)ssglanders_video_data.csv')
+# existing_video_ids = set(video_df['video_id'])
+existing_video_ids = set(
+    video_df.loc[~video_df['video_id'].astype(str).str.startswith("'"), 'video_id']
+)
 
 # 1. 재생목록 메타데이터 수집
 playlist_id_to_title = {}
@@ -81,11 +84,29 @@ now = datetime.now().strftime('%Y-%m-%d_%H%M%S')
 # playlist_metadata 저장
 playlist_meta_df = pd.DataFrame(playlist_meta)
 playlist_meta_df['video_ids'] = playlist_meta_df['video_ids'].apply(lambda x: ', '.join(x))
+
+# playlist_id '-'로 시작하면 앞에 ' 붙이기
+playlist_meta_df['playlist_id'] = playlist_meta_df['playlist_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
 playlist_meta_df.to_csv(f'../1. Data_Collection/({now})ssglanders_playlist_metadata.csv',
                         index=False, encoding='utf-8-sig')
 
 # video-playlist 매핑 저장
 video_playlist_df = pd.DataFrame(video_playlist_map)
+
+# playlist_id '-'로 시작하면 앞에 ' 붙이기
+video_playlist_df['playlist_id'] = video_playlist_df['playlist_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
+# video_id '-'로 시작하면 앞에 ' 붙이기
+video_playlist_df['video_id'] = video_playlist_df['video_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
+
 video_playlist_df.to_csv(f'../1. Data_Collection/({now})ssglanders_video_playlist_map.csv',
                          index=False, encoding='utf-8-sig')
 

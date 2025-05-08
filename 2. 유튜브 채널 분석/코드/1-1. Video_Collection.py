@@ -11,6 +11,17 @@ api_key = 'AIzaSyBqklA_4k7nyCUzvBB72Jg0V14DOMUcW2U' # 개인 구글 API key
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 '''
+BEARS TV # 두산베어스
+LGTWINSTV # LG트윈스
+Giants TV # 롯데
+키움히어로즈 # 키움
+기아타이거즈 - 갸티비 # 기아
+LionsTV # 삼성
+Eagles TV # 한화
+NC 다이노스 # NC
+kt wiz - 위즈TV # KT
+
+
 # 사용자 이름(@ssglanders) 기반으로 채널 검색
 request = youtube.search().list(
     q='ssglanders',        # 검색어
@@ -111,6 +122,16 @@ for video in video_ids:
 # 9. 데이터프레임으로 정리 후 CSV 저장
 now = datetime.now().strftime('%Y-%m-%d_%H%M%S')  # 날짜+시간을 파일명으로 쓸 수 있게 형식화
 df = pd.DataFrame(all_video_data)
+
+# video_id가 '-'로 시작하면 앞에 ' 붙이기
+df['video_id'] = df['video_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
+# category_id '-'로 시작하면 앞에 ' 붙이기
+df['category_id'] = df['category_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
 
 df.to_csv(f'../1. Data_Collection/({now})ssglanders_video_data.csv',
           index=False, encoding='utf-8-sig')

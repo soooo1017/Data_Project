@@ -74,6 +74,18 @@ for video_id in video_ids:
 now = datetime.now().strftime('%Y-%m-%d_%H%M%S')  # 날짜+시간을 파일명으로 쓸 수 있게 형식화
 
 df_comments = pd.DataFrame(all_comments)
+
+# video_id '-'로 시작하면 앞에 ' 붙이기
+df_comments['video_id'] = df_comments['video_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
+# video_id '-'로 시작하면 앞에 ' 붙이기
+df_comments['comment_id'] = df_comments['comment_id'].apply(
+    lambda x: f"'{x}" if str(x).startswith('-') else x
+)
+
+
 df_comments.to_csv(f'../1. Data_Collection/({now})ssglanders_video_comments.csv',
                    index=False, encoding='utf-8-sig')
 

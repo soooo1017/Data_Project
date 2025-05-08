@@ -3,9 +3,9 @@ import re
 from datetime import datetime
 
 
-video_df = pd.read_csv('../1. Data_Collection/(2025-05-07_013328)ssglanders_video_data.csv')
-playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-07_020216)ssglanders_playlist_metadata.csv')
-video_playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-07_020216)ssglanders_video_playlist_map.csv')
+video_df = pd.read_csv('../1. Data_Collection/(2025-05-09_025608)ssglanders_video_data.csv')
+playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-09_030759)ssglanders_playlist_metadata.csv')
+video_playlist_df = pd.read_csv('../1. Data_Collection/(2025-05-09_030759)ssglanders_video_playlist_map.csv')
 
 # 모든 컬럼 확인가능하도록 설정
 pd.set_option('display.max_columns', None)
@@ -16,6 +16,7 @@ pd.set_option('display.max_columns', None)
 video_df['id'] = ['video_' + str(i+1) for i in video_df.index]
 
 # 변수 생성
+video_df['video_id'] = video_df['video_id'].str.replace('=', "'", regex=False)
 video_df['like_rate'] = video_df['like_count'] / video_df['view_count'] # 좋아요율
 video_df['comment_rate'] = video_df['comment_count'] / video_df['view_count'] # 댓글률
 
