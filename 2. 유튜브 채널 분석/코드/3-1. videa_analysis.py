@@ -1,13 +1,69 @@
 import pandas as pd
 
-
 # 모든 컬럼 확인가능하도록 설정
 pd.set_option('display.max_columns', None)
 
 # 데이터 가져오기
-video_final_df = pd.read_csv('../2. Data_Preprocessing/ssglanders_video_final.csv')
+video_final_df = pd.read_excel('../2. Data_Preprocessing/ssglanders_video_final.xlsx')
+top5_final_df = pd.read_excel('../2. Data_Preprocessing/top5_video_final.xlsx')
+bottom5_final_df = pd.read_excel('../2. Data_Preprocessing/bottom5_video_final.xlsx')
+
 result = ['view_count', 'like_count', 'comment_count', 'like_rate', 'comment_rate']
 
+
+# 분석 함수(성과, 영상개수 대비 조회수)
+def analyze_performance(index, columns=None):
+    # pivot_table 계산 (mean, sum, count)
+    pivot = video_final_df.pivot_table(
+        index=index,
+        columns=columns,
+        values=result,
+        aggfunc=['mean', 'sum', 'count']
+    ) # 성과(평균, 합계, 개수)
+
+    # sum(view_count) ÷ count(view_count)로 avg_views 계산 - 업로드 영상 개수 대비 조회수
+    view_sum = pivot['sum']['view_count']
+    view_count = pivot['count']['view_count']
+    avg_views = view_sum / view_count
+
+    # avg_views 이름 지정 (다중 컬럼/단일 컬럼 구분)
+    if columns is None:
+        avg_views.name = 'avg_views'
+    else:
+        avg_views.name = ('avg_views', '', '')
+
+    # DataFrame으로 변환
+    avg_views_df = avg_views.to_frame()
+
+    # 결과 합치기
+    combined = pd.concat([pivot, avg_views_df], axis=1)
+
+    return combined
+
+result_pivot = analyze_performance(video_final_df['publish_year'], video_final_df['publish_day'])
+print(result_pivot)
+
+
+'''
+x_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
+y_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
+sheet_number = 1
+
+for x in x_list:
+    result_pivot = analyze_performance(video_final_df[x])
+    print(result_pivot)
+
+    for y in y_list:
+        result_pivot_2 = analyze_performance(video_final_df[x], video_final_df[y])
+
+        # 시트번호 1 증가
+        sheet_number += 1
+        '''
+
+
+
+
+'''
 
 # 성과분석
 def pivot_result(x, y=None) : # result 값에 대한 평균, 총합, 갯수 산출
@@ -59,7 +115,7 @@ with pd.ExcelWriter('../3. Analysis_result/1-1. ssglanders_analysis.xlsx', engin
 # 성과분석_엑셀 통합파일 생성
 with pd.ExcelWriter('../3. Analysis_result/1-2. ssglanders_성과분석.xlsx', engine='xlsxwriter') as writer:
     agg_list = ['mean', 'sum', 'count']
-    x_list = ['playlist_label', 'publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
+    x_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
     y_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
     sheet_number = 1
 
@@ -76,7 +132,7 @@ with pd.ExcelWriter('../3. Analysis_result/1-2. ssglanders_성과분석.xlsx', e
 
 # 평균조회수_엑셀 통합파일 생성
 with pd.ExcelWriter('../3. Analysis_result/1-3. ssglanders_평균조회수.xlsx', engine='xlsxwriter') as writer:
-    x_list = ['playlist_label', 'publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
+    x_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
     y_list = ['publish_year', 'publish_day', 'publish_time_label', 'publish_am_pm']
     sheet_number = 1
 
@@ -159,5 +215,4 @@ with pd.ExcelWriter('../3. Analysis_result/3-2. ssglanders_영상길이_평균�
 
 
 
-
-
+'''

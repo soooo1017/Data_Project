@@ -5,7 +5,7 @@ from googleapiclient.discovery import build
 from datetime import datetime
 
 # 2. API 키 입력 (YouTube API v3에서 받은 키)
-api_key = 'AIzaSyBqklA_4k7nyCUzvBB72Jg0V14DOMUcW2U' # 개인 구글 API key
+api_key = 'AIzaSyDVQj_8m81GM3V3JyNSuozlNRIcrVqpop0' # 개인 구글 API key
 
 # 3. API 연결 설정
 youtube = build('youtube', 'v3', developerKey=api_key)
@@ -66,13 +66,6 @@ while True:
             'published_at': item['snippet']['publishedAt']
         })
 
-    '''
-    if len(video_ids) >= 10:
-        break  # 10개까지만 수집
-
-    if len(video_ids) >= 10 or not playlist_response.get('nextPageToken'):
-        break
-    '''
 
     next_page_token = playlist_response.get('nextPageToken')
     if not next_page_token:
@@ -119,21 +112,27 @@ for video in video_ids:
         print(f"Error for video {vid}: {e}")
 
 
-# 9. 데이터프레임으로 정리 후 CSV 저장
-now = datetime.now().strftime('%Y-%m-%d_%H%M%S')  # 날짜+시간을 파일명으로 쓸 수 있게 형식화
+# 9. 데이터프레임으로 정리 후 엑셀 저장
 df = pd.DataFrame(all_video_data)
 
-# video_id가 '-'로 시작하면 앞에 ' 붙이기
-df['video_id'] = df['video_id'].apply(
-    lambda x: f"'{x}" if str(x).startswith('-') else x
-)
+# 2. ExcelWriter 사용해서 xlsx로 저장
+now = datetime.now().strftime('%Y-%m-%d_%H%M%S') # 날짜+시간을 파일명으로 쓸 수 있게 형식화
+output_path = f'../1. Data_Collection/({now})ssglanders_video_data.xlsx'
 
-# category_id '-'로 시작하면 앞에 ' 붙이기
-df['category_id'] = df['category_id'].apply(
-    lambda x: f"'{x}" if str(x).startswith('-') else x
-)
+with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
+    df.to_excel(writer, sheet_name='VideoData', index=False)
 
-df.to_csv(f'../1. Data_Collection/({now})ssglanders_video_data.csv',
-          index=False, encoding='utf-8-sig')
+    workbook = writer.book
+    worksheet = writer.sheets['VideoData']
 
-print(f"{len(df)}개의 영상 데이터를 파일에 저장했어요!")
+    # 3. id 관련 열의 인덱스 확인 (0-based → A=0, B=1, ...)
+    id_columns = ['video_id', 'category_id']
+    for col in id_columns:
+        if col in df.columns:
+            col_idx = df.columns.get_loc(col)
+            col_letter = chr(ord('A') + col_idx)
+            # 열 서식을 텍스트로 지정
+            worksheet.set_column(f'{col_letter}:{col_letter}', None, workbook.add_format({'num_format': '@'}))
+
+print(f"{len(df)}개의 영상 데이터를 Excel 파일로 저장했어요!")
+
