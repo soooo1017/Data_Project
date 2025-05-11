@@ -13,17 +13,21 @@ from wordcloud import WordCloud
 pd.set_option('display.max_columns', None)
 
 # 데이터 가져오기
-video_final_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/2. Data_Preprocessing/ssglanders_video_final.csv')
-comment_final_df = pd.read_csv('/Users/SOO/Desktop/데분 포트폴리오/Data_Project/2. 유튜브 채널 분석/2. Data_Preprocessing/ssglanders_comment_final.csv')
-comment_text = comment_final_df['text'][comment_final_df['text'].notnull()].dropna() # 전체 댓글
 
-# 조회수 상위 5개
-top5_videos = video_final_df.sort_values(by='view_count', ascending=False).head(5)['title'] # 영상
-top5_comments = comment_final_df[comment_final_df['video_title'].isin(top5_videos)]['text'].dropna() # 영상 댓글
+# 영상 데이터
+all_final_df = pd.read_excel('../2. Data_Preprocessing/ssglanders_video_final.xlsx')
+top5_final_df = pd.read_excel('../2. Data_Preprocessing/top5_video_final.xlsx')
+bottom5_final_df = pd.read_excel('../2. Data_Preprocessing/bottom5_video_final.xlsx')
 
-# 조회수 하위 5개
-bottom5_videos = video_final_df.sort_values(by='view_count', ascending=True).head(5)['title'] # 영상
-bottom5_comments = comment_final_df[comment_final_df['video_title'].isin(bottom5_videos)]['text'].dropna() # 영상 댓글
+# 댓글 데이터
+all_comment_df = pd.read_excel('../2. Data_Preprocessing/(ALL)_comment_data.xlsx')
+top5_comment_df = pd.read_excel('../2. Data_Preprocessing/(TOP5)_comment_data.xlsx')
+bottom5_comment_df = pd.read_excel('../2. Data_Preprocessing/(BOTTOM5)_comment_data.xlsx')
+
+# 댓글 텍스트 데이터만 추출
+all_text = all_comment_df['text'][all_comment_df['text'].notnull()].dropna() # 전체 댓글
+top5_text = top5_comment_df['text'][top5_comment_df['text'].notnull()].dropna() # 상위5 댓글
+bottom5_text = bottom5_comment_df['text'][bottom5_comment_df['text'].notnull()].dropna() # 하위5 댓글
 
 
 # 1. 텍스트 길이 확인 함수 -> 길이 그래프도 확인 및 파일 저장
@@ -42,9 +46,14 @@ def text_count(deta, label, save_path) :
 
     return text_num
 
-comment_text_num = text_count(comment_text, '전체 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-1. Comment_text_num_graph.png')
-top5_text_num = text_count(top5_comments, 'Top5 영상 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-2. Top5_text_num_graph.png')
-bottom5_text_num = text_count(bottom5_comments, 'Bottom5 영상 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-3. Bottom5_text_num_graph.png')
+comment_text_num = text_count(all_text, '전체 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-1. Comment_text_num_graph.png')
+top5_text_num = text_count(top5_text, 'Top5 영상 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-2. Top5_text_num_graph.png')
+bottom5_text_num = text_count(bottom5_text, 'Bottom5 영상 댓글', '../3. Analysis_result/4. comment_text_num_graph/4-3. Bottom5_text_num_graph.png')
+
+
+# 여기까지 검토 완료
+
+
 
 # 영상별로 그룹
 video_num = 4
