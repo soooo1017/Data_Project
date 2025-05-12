@@ -1,11 +1,11 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import re
-from mecab import MeCab
-from collections import Counter
-from wordcloud import WordCloud
-import os
-from datetime import datetime
+import pandas as pd  # 데이터 처리 및 분석
+import matplotlib.pyplot as plt  # 그래프를 그리기 위한 라이브러리
+import re  # 정규 표현식 처리
+from mecab import MeCab  # 한국어 형태소 분석
+from collections import Counter  # 단어 빈도 수를 세는 도구
+from wordcloud import WordCloud  # 워드클라우드를 만들기 위한 라이블러리
+import os  # 폴더 생성, 경로 처리 등
+from datetime import datetime  # 날짜 및 시간 처리
 
 
 # 모든 컬럼 확인가능하도록 설정
