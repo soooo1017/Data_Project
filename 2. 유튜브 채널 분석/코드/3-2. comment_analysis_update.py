@@ -6,6 +6,7 @@ from collections import Counter  # 단어 빈도 수를 세는 도구
 from wordcloud import WordCloud  # 워드클라우드를 만들기 위한 라이블러리
 import os  # 폴더 생성, 경로 처리 등
 from datetime import datetime  # 날짜 및 시간 처리
+import numpy as np
 
 
 # 모든 컬럼 확인가능하도록 설정
@@ -43,51 +44,73 @@ def makedirs(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-# 1. 텍스트 길이 확인 함수 -> 길이 그래프도 확인 및 파일 저장
-def text_count(deta, label, save_path) :
-    text_num = [len(text) for text in deta]
+# 기본 폴더 경로 생성
+now = datetime.now().strftime('%Y-%m-%d_%H%M%S') # 날짜+시간을 파일명으로 쓸 수 있게 형식화
+makedirs(f'../3. Analysis_result/{now} comment_result/text_length')
+base_path = f'../3. Analysis_result/{now} comment_result/text_length'
+
+# makedirs(f'{base_path}/video')
+
+# 댓글에서 \n, \t, \\, \ 등을 제거하는 함수
+def clean_special_chars(text):
+    text = re.sub(r'\\n', ' ', text)  # \n을 공백으로 치환
+    text = re.sub(r'\\t', ' ', text)  # \t을 공백으로 치환
+    text = re.sub(r'\\\\', ' ', text)  # \\ (역슬래시)를 공백으로 치환
+    return text
+
+# 텍스트 길이 확인 함수 -> 길이 그래프도 확인 및 파일 저장
+def analyze_text_length(deta, label, graph_file_path, stats_file_path) :
+    text_num = [len(str(text)) if isinstance(text, str) else 0 for text in deta]
 
     plt.figure(figsize=(14,5))
     plt.rcParams['font.family'] = 'AppleGothic'
-    plt.hist(text_num, bins=80, range=[0,200], color = 'b', label = label)
+    plt.hist(text_num, bins=80, range=[0,150], color = 'b', label = label)
     plt.legend()
     plt.title('댓글 길이 확인')
     plt.xlabel('텍스트 길이')
     plt.ylabel('해당 길이에 속하는 텍스트 개수')
-    plt.savefig(save_path)
+    plt.savefig(f'{base_path}/{graph_file_path}')
     # plt.show()
+    plt.close()  # ✅ 메모리 정리
+
+    mean = np.mean(text_num)
+    max = np.max(text_num)
+    min = np.min(text_num)
+    median = np.median(text_num)
+    quartiles = np.percentile(text_num, [25, 50, 75])
+
+    text_describe = pd.DataFrame({
+        '구분' : ['mean', 'max', 'min', 'median', 'quartiles'],
+        '통계값' : [mean, max, min, median, quartiles]
+    })
+
+    text_describe.to_excel(f'{base_path}/{stats_file_path}', index=False)
 
     return text_num
 
-now = datetime.now().strftime('%Y-%m-%d_%H%M%S') # 날짜+시간을 파일명으로 쓸 수 있게 형식화
-makedirs(f'../3. Analysis_result/{now} comment_result')
+all_text = all_text.astype(str).apply(clean_special_chars)
+top5_text = top5_text.astype(str).apply(clean_special_chars)
+bottom5_text = bottom5_text.astype(str).apply(clean_special_chars)
 
-
+# 영상 전체, 상위5, 하위5개 댓글 길이 파악
 for name, data in text_df.items() :
-    text_count(data, f'{name}_댓글', f'../3. Analysis_result/{now} comment_result/{name}/1-1.{name}_Comment_text_num_graph.png')
+    makedirs(f'{base_path}/{name}')
+    text_count = analyze_text_length(data, f'{name}_댓글', f'{name}/1-1.{name}_text_num_graph.png', f'{name}/1-2.{name}_text_describe.xlsx')
 
+print("영상 전체, 상위5, 하위5의 댓글 길이 분석 완료했습니다!")
 '''
+# 영상별 댓글 길이 그래프 생성
+for id, group in all_comment_df.groupby('id') :
+    group_text = group['text'][group['text'].notnull()].dropna()
+    group_text = group_text.astype(dtype='object')
+    makedirs(f'{base_path}/video/{id}')
+    graph_file_path = f"video/{id}/1-1. comment_text_num_graph.png"
+    stats_file_path = f"video/{id}/1-2. comment_text_describe.xlsx"
 
-# 여기까지 검토 완료
+    analyze_text_length(group_text, f'{id}번 영상 댓글', graph_file_path, stats_file_path)
 
-
-
-# 영상별로 그룹
-video_num = 4
-video_match = {}
-for video_title, group in all_text.groupby('video_title'):
-    group_text = group['text'].dropna()
-    save_path = f"../3. Analysis_result/4. comment_text_num_graph/4-{video_num}. video_text_num_graph.png"
-
-    text_count(group_text, f'{video_num}번 영상 댓글', save_path)
-
-    video_match[video_num] = video_title
-    video_num += 1
-
-# print(pd.Series(comment_text_num).describe())
-
-# 조사 등 불필요한 품사 및 단어 제거
-
+    print(f"{id}의 댓글 길이 분석 완료했습니다!")
+'''
 # 반복 문자 패턴 정리
 def normalize_repeated_char(text):
     text = re.sub(r'(ㅋ)\1{1,}', r'\1', text)  # ㅋㅋㅋㅋ → ㅋ
@@ -110,22 +133,11 @@ def normalize_repeated_char(text):
     text = re.sub(r'[^\w\s]', '', text)
     return text
 
+
 # 반복 문자 정리
-comment_text = comment_text.apply(normalize_repeated_char)
-top5_comments = top5_comments.apply(normalize_repeated_char)
-bottom5_comments = bottom5_comments.apply(normalize_repeated_char)
-text_dict = {
-    'all': comment_text,
-    'top5': top5_comments,
-    'bottom5': bottom5_comments
-}
-
-video_num = 1
-for video_title, group in comment_final_df.groupby('video_title'):
-    group_text = group['text'].dropna().apply(normalize_repeated_char)
-    text_dict[f'video_{video_num}'] = group_text
-    video_num += 1
-
+all_text = all_text.apply(normalize_repeated_char)
+top5_text = top5_text.apply(normalize_repeated_char)
+bottom5_text = bottom5_text.apply(normalize_repeated_char)
 
 
 # 불필요한 단어 리스트
@@ -141,11 +153,12 @@ custom_stopwords.extend(file_stopwords)
 # MeCab 형태소 분석기 객체 생성
 mecab = MeCab()
 
+makedirs(f'../3. Analysis_result/{now} comment_result/text_distribution')
+
 # 불용어 제거 및 품사 태깅
-file_num = 0
-for type in text_dict.keys() :
+for type in text_df.keys() :
     prepro_words = []
-    for comment in text_dict[type] :
+    for comment in text_df[type] :
         for word, tag in mecab.pos(comment) :
             # VV: 동사 / VA: 형용사 / NN* : 명사
             if tag.startswith(('VV', 'VA', 'NN')) or tag == 'SL':
@@ -185,8 +198,10 @@ for type in text_dict.keys() :
     # count 기준으로 내림차순 정렬
     word_df = word_df.sort_values(by='count', ascending=False)
 
+    makedirs(f'../3. Analysis_result/{now} comment_result/text_distribution/{type}')
+
     # print(word_df)
-    word_df.to_csv(f'../3. Analysis_result/5. comment_word_df/5-{file_num}. {type}_comment_text.csv', index=False, encoding='utf-8-sig')
+    word_df.to_csv(f'../3. Analysis_result/{now} comment_result/text_distribution/{type}/1-1. {type}_comment_text.csv', index=False, encoding='utf-8-sig')
 
     wc = word_df.set_index('word').to_dict()['count']
 
@@ -203,11 +218,11 @@ for type in text_dict.keys() :
     plt.imshow(wordCloud)
     plt.axis('off')
     plt.title(f'{type}_wordcloud')
-    plt.savefig(f'../3. Analysis_result/6. wordcloud_graph/6-{type}. wordcloud_graph.png')
+    plt.savefig(f'../3. Analysis_result/{now} comment_result/text_distribution/{type}/1-2. {type}_wordcloud_graph.png')
     # plt.show()
+    plt.close()
 
-    file_num += 1
-'''
+    print(f'{type} 작업 완료!')
 
 
 '''

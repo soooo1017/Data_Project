@@ -1,7 +1,8 @@
 import pandas as pd
 from datetime import datetime
 import os
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # 모든 컬럼 확인가능하도록 설정
 pd.set_option('display.max_columns', None)
@@ -43,7 +44,7 @@ def makedirs(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
-# 단순 성과분석
+# 성과분석
 def pivot_result(final_df, z, x, y=None) : # result 값에 대한 평균, 총합, 갯수 산출
     # result 값에 대한 평균, 총합, 갯수 산출
     return final_df.pivot_table(
@@ -52,7 +53,7 @@ def pivot_result(final_df, z, x, y=None) : # result 값에 대한 평균, 총합
         aggfunc=['mean', 'sum', 'count']
     )
 
-# 성과분석 + 업로드 당 평균 조회수
+# 업로드 당 평균 조회수
 def avg_views_per_upload(final_df, x, y=None) :
     pivot_2 = final_df.pivot_table(
         index=x,
@@ -86,6 +87,16 @@ for name, data in df.items() :
         # 상관정도 확인
         all_corr = data[result].corr()
         all_corr.to_excel(writer, sheet_name = '상관분석')
+
+        # 히트맵 생성 및 저장
+        plt.rc("font", family="AppleGothic")  # 한글 폰트 설정
+        plt.figure(figsize=(10, 8))  # 그래프 크기 조정
+        hm = sns.heatmap(all_corr, annot=True, fmt=".2f", cmap="coolwarm")
+        plt.title(f"({name}) 상관계수 히트맵", fontsize=16)
+        plt.show()
+        hm.get_figure().savefig(f"../3. Analysis_result/{now} total_result/{name}/({name}) 상관계수_히트맵.png")
+        plt.close()
+
 
         if name in ['like_top5', 'like_bottom5', 'comment_top5', 'comment_bottom5'] : # 좋아요 비율, 댓글 비율 기준 상위5, 하위5인 경우 데이터도 엑셀로 저장
             data.to_excel(writer, sheet_name = f'{name}_data')
