@@ -44,6 +44,9 @@ def makedirs(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+# print(video_final_df['duration_label'].value_counts())
+
+
 # 성과분석
 def pivot_result(final_df, z, x, y=None) : # result 값에 대한 평균, 총합, 갯수 산출
     # result 값에 대한 평균, 총합, 갯수 산출
@@ -52,23 +55,6 @@ def pivot_result(final_df, z, x, y=None) : # result 값에 대한 평균, 총합
         values=z,
         aggfunc=['mean', 'sum', 'count']
     )
-
-# 업로드 당 평균 조회수
-def avg_views_per_upload(final_df, x, y=None) :
-    pivot_2 = final_df.pivot_table(
-        index=x,
-        columns=y,
-        values='view_count',
-        aggfunc=['sum', 'count']
-    )
-
-    # 업로드당 평균 조회수 계산 = sum / count
-    view_sum = pivot_2['sum']
-    view_count = pivot_2['count']
-    avg_views = view_sum / view_count
-
-    return avg_views
-
 
 now = datetime.now().strftime('%Y-%m-%d_%H%M%S') # 날짜+시간을 파일명으로 쓸 수 있게 형식화
 
@@ -106,16 +92,11 @@ for name, data in df.items() :
         with pd.ExcelWriter(f'../3. Analysis_result/{now} total_result/{name}/1-2. {name} ssglanders_{z}_analysis.xlsx', engine='xlsxwriter') as writer:
             for index in index_list:
                 pivot_result(data, z, data[f'{index}']).to_excel(writer, sheet_name=f'{index}_성과분석')
-                avg_views_per_upload(data, data[f'{index}']).to_excel(writer, sheet_name=f'{index}_평균조회수')
                 if index == 'publish_day':
                     for column in ['publish_time_label', 'publish_am_pm', 'duration_label']:
                         pivot_result(data, z, data[f'{index}'], data[f'{column}']).to_excel(writer, sheet_name=f'day_{column}_성과분석')
-                        avg_views_per_upload(data, data[f'{index}'], data[f'{column}']).to_excel(writer, sheet_name=f'day_{column}_평균조회수')
                 if index == 'publish_time_label':
                     pivot_result(data, z, data[f'{index}'], data['duration_label']).to_excel(writer, sheet_name=f'time_duration_성과분석')
-                    avg_views_per_upload(data, data[f'{index}'], data['duration_label']).to_excel(writer, sheet_name=f'time_duration_평균조회수')
-                if index == 'publish_am_pm':
+                 if index == 'publish_am_pm':
                     pivot_result(data, z, data[f'{index}'], data['duration_label']).to_excel(writer,
                                                                                              sheet_name=f'am_pm_duration_성과분석')
-                    avg_views_per_upload(data, data[f'{index}'], data['duration_label']).to_excel(writer,
-                                                                                                  sheet_name=f'am_pm_duration_평균조회수')
